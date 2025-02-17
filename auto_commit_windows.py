@@ -36,7 +36,7 @@ def main():
         sys.exit(1)
 
     print("Retrieving Git diff...")
-    diff_process = subprocess.run(["git", "diff", "HEAD^", "HEAD"], capture_output=True, text=True)
+    diff_process = subprocess.run(["git", "diff", "--staged"], capture_output=True, text=True)
     diff_output = diff_process.stdout.strip()
 
     if args.openai:
