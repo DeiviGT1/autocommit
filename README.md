@@ -20,55 +20,55 @@ automate the Git commit process, with an option to generate commit messages\usin
 
 1. Clone the repository:
 
+   ```
    git clone https://github.com/your_username/auto-commit-tool.git
+   ```
    cd auto-commit-tool
 
-2. (Optional) Create a virtual environment and install dependencies:
-
+3. (Optional) Create a virtual environment and install dependencies:
+   ```
    python3 -m venv venv
    source venv/bin/activate
    pip install -r requirements.txt
+   ```
 
-3. Make the script executable:
-
+4. Make the script executable:
+   ```
    chmod +x auto_commit.py
-
+   ```
 ## Usage
 
 ### Basic Execution
 
 Run the script witout the OpenAI option:
-
+   ```
    ./auto_commit.py
-
+   ```
 ### Using the OpenAI API
 
 Ensure your OpenAI API key is et (via the --api-key flag or the OPENAI_API_KEY environment variable).
 
 Example:
-
+   ```
    ./auto_commit.py --openai --push --api-key YOUR_OPENAI_API_KEY
-
+   ```
 ### Creating an Alias
 
 To simplify execution, create an alias in your shell configuration.
 
 For example, edit your ~/.bash_profile or ~/.zshrc and add this line:
-
-   alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY /Users/david/Desktop/ds/auto_commit.py --openai --push'
-
+   ```
+   alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY {complete_folder_path}/auto_commit.py --openai --push'
+   ```
 Reload your shell configuration:
-
+   ```
    source ~/.bash_profile
-
+   ```
 Now, run:
-
+   ```
    autocommit
-
+   ```
 ## Contributing
 
 Contributions are welcome!
 
-## License
-
-This project is licensed under the MIT License.
