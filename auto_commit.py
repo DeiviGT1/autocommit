@@ -38,11 +38,10 @@ def main():
         print("Error executing 'git add .'.")
         sys.exit(1)
 
-    # 2. Retrieve the Git diff
+    # 2. Retrieve the Git diff using "git diff HEAD^ HEAD"
     print("Retrieving Git diff...")
     diff_process = subprocess.run(["git", "diff", "HEAD^", "HEAD"], capture_output=True, text=True)
     diff_output = diff_process.stdout.strip()
-    
 
     # 3. Generate commit message using OpenAI (via requests)
     if args.openai:
@@ -93,13 +92,17 @@ def main():
         sys.exit(1)
 
     # 5. Push changes if the --push flag was specified
-    print(args)
     if args.push:
         print("Pushing changes to the remote repository...")
-        push_result = subprocess.run(["git", "push"])
-        if push_result.returncode != 0:
-            print("Error during push.")
-            sys.exit(1)
+        # Check if any remote is configured
+        remote_result = subprocess.run(["git", "remote"], capture_output=True, text=True)
+        if remote_result.stdout.strip() == "":
+            print("No remote repository configured. Skipping push.")
+        else:
+            push_result = subprocess.run(["git", "push"])
+            if push_result.returncode != 0:
+                print("Error during push.")
+                sys.exit(1)
     else:
         print("Push option not specified. Skipping push.")
 
