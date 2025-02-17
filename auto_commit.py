@@ -1,18 +1,13 @@
-#!/usr/bin/env python3
+#!/Users/david/Desktop/ds/venv/bin/python3
 import os
 import subprocess
 import argparse
 import sys
-
-# Import openai only if needed
-try:
-    import openai
-except ImportError:
-    openai = None
+import requests
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Tool for automating Git commits, with the option to generate commit messages using the OpenAI API."
+        description="Tool for automating Git commits, with the option to generate commit messages using the OpenAI API via requests."
     )
     parser.add_argument(
         "--openai",
@@ -37,10 +32,10 @@ def main():
         sys.exit(1)
 
     # 1. Stage changes
-    print("Staging changes with 'git add *'...")
-    add_result = subprocess.run("git add *", shell=True)
+    print("Staging changes with 'git add .'...")
+    add_result = subprocess.run("git add .", shell=True, capture_output=True, text=True)
     if add_result.returncode != 0:
-        print("Error executing 'git add *'.")
+        print("Error executing 'git add .'.")
         sys.exit(1)
 
     # 2. Retrieve the Git diff
@@ -48,35 +43,42 @@ def main():
     diff_process = subprocess.run(["git", "diff"], capture_output=True, text=True)
     diff_output = diff_process.stdout.strip()
 
-    # 3. Generate commit message
+    # 3. Generate commit message using OpenAI (via requests)
     if args.openai:
-        if openai is None:
-            print("Error: 'openai' package not found. Please install it with 'pip install openai'.")
-            sys.exit(1)
         api_key = args.api_key or os.environ.get("OPENAI_API_KEY")
         if not api_key:
             print("Error: OpenAI API key not provided. Use --api-key or set the OPENAI_API_KEY environment variable.")
             sys.exit(1)
-        openai.api_key = api_key
-
-        prompt = (
+        user_message = (
             "Generate a concise and descriptive commit message for the following diff:\n\n"
             + diff_output
         )
-        print("Generating commit message using OpenAI...")
+        print("Generating commit message using OpenAI (via requests)...")
+        endpoint = "https://api.openai.com/v1/chat/completions"
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        data = {
+            "model": "gpt-4o",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant that generates concise and descriptive commit messages."},
+                {"role": "user", "content": user_message}
+            ],
+            "max_tokens": 50,
+            "temperature": 0.5
+        }
         try:
-            response = openai.Completion.create(
-                engine="text-davinci-003",
-                prompt=prompt,
-                max_tokens=50,
-                temperature=0.5,
-                n=1,
-                stop=None,
-            )
-            commit_message = response.choices[0].text.strip()
+            response = requests.post(endpoint, headers=headers, json=data)
+            if response.status_code != 200:
+                print("Error generating commit message with OpenAI. Status Code:", response.status_code)
+                print("Response:", response.text)
+                sys.exit(1)
+            json_response = response.json()
+            commit_message = json_response['choices'][0]['message']['content'].strip()
             print("Generated commit message:", commit_message)
         except Exception as e:
-            print("Error generating commit message with OpenAI:", e)
+            print("Error generating commit message with OpenAI via requests:", e)
             sys.exit(1)
     else:
         commit_message = input("Enter the commit message: ")
