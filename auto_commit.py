@@ -79,7 +79,6 @@ def main():
                 sys.exit(1)
             json_response = response.json()
             commit_message = json_response['choices'][0]['message']['content'].strip()
-            print("Generated commit message:", commit_message)
         except Exception as e:
             print("Error generating commit message with OpenAI via requests:", e)
             sys.exit(1)
@@ -94,6 +93,7 @@ def main():
         sys.exit(1)
 
     # 5. Push changes if the --push flag was specified
+    print(args)
     if args.push:
         print("Pushing changes to the remote repository...")
         push_result = subprocess.run(["git", "push"])
