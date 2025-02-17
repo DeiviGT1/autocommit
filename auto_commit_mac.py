@@ -81,6 +81,7 @@ def main():
         commit_message = input("Enter the commit message: ")
 
     print("Committing changes...")
+    
     commit_result = subprocess.run(["git", "commit", "-am", commit_message])
     if commit_result.returncode != 0:
         print("Error during commit.")
