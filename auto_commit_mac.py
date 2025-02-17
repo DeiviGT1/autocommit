@@ -17,7 +17,8 @@ def main():
     parser.add_argument(
         "--push",
         action="store_true",
-        help="Push the commit after committing."
+        default=False,
+        help="Push the commit after committing. (Default: False)"
     )
     parser.add_argument(
         "--api-key",
