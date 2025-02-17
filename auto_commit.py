@@ -40,8 +40,9 @@ def main():
 
     # 2. Retrieve the Git diff
     print("Retrieving Git diff...")
-    diff_process = subprocess.run(["git", "diff"], capture_output=True, text=True)
+    diff_process = subprocess.run(["git", "diff", "HEAD^", "HEAD"], capture_output=True, text=True)
     diff_output = diff_process.stdout.strip()
+    
 
     # 3. Generate commit message using OpenAI (via requests)
     if args.openai:
@@ -49,6 +50,7 @@ def main():
         if not api_key:
             print("Error: OpenAI API key not provided. Use --api-key or set the OPENAI_API_KEY environment variable.")
             sys.exit(1)
+        print("diff_output:" + diff_output)
         user_message = (
             "Generate a concise and descriptive commit message for the following diff:\n\n"
             + diff_output
@@ -59,6 +61,7 @@ def main():
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
+        
         data = {
             "model": "gpt-4o",
             "messages": [
