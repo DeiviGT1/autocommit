@@ -6,6 +6,7 @@ import sys
 import requests
 
 def main():
+    
     parser = argparse.ArgumentParser(
         description="Tool for automating Git commits, with the option to generate commit messages using the OpenAI API via requests."
     )
