@@ -6,7 +6,6 @@ import sys
 import requests
 
 def main():
-    
     parser = argparse.ArgumentParser(
         description="Tool for automating Git commits, with the option to generate commit messages using the OpenAI API via requests."
     )
@@ -27,24 +26,20 @@ def main():
     )
     args = parser.parse_args()
 
-    # Check that the current directory is a Git repository
     if not os.path.isdir(".git"):
         print("Error: .git directory not found. Make sure you are in a Git repository.")
         sys.exit(1)
 
-    # 1. Stage changes
     print("Staging changes with 'git add .'...")
     add_result = subprocess.run("git add .", shell=True, capture_output=True, text=True)
     if add_result.returncode != 0:
         print("Error executing 'git add .'.")
         sys.exit(1)
 
-    # 2. Retrieve the Git diff using "git diff HEAD^ HEAD"
     print("Retrieving Git diff...")
     diff_process = subprocess.run(["git", "diff", "HEAD^", "HEAD"], capture_output=True, text=True)
     diff_output = diff_process.stdout.strip()
 
-    # 3. Generate commit message using OpenAI (via requests)
     if args.openai:
         api_key = args.api_key or os.environ.get("OPENAI_API_KEY")
         if not api_key:
@@ -61,7 +56,6 @@ def main():
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
-        
         data = {
             "model": "gpt-4o",
             "messages": [
@@ -85,17 +79,14 @@ def main():
     else:
         commit_message = input("Enter the commit message: ")
 
-    # 4. Commit the changes
     print("Committing changes...")
     commit_result = subprocess.run(["git", "commit", "-am", commit_message])
     if commit_result.returncode != 0:
         print("Error during commit.")
         sys.exit(1)
 
-    # 5. Push changes if the --push flag was specified
     if args.push:
         print("Pushing changes to the remote repository...")
-        # Check if any remote is configured
         remote_result = subprocess.run(["git", "remote"], capture_output=True, text=True)
         if remote_result.stdout.strip() == "":
             print("No remote repository configured. Skipping push.")
