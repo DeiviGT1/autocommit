@@ -85,6 +85,7 @@ def main():
         print("Error during commit.")
         sys.exit(1)
 
+    print("ARGS: " + args)
     if args.push:
         print("Pushing changes to the remote repository...")
         remote_result = subprocess.run(["git", "remote"], capture_output=True, text=True)
