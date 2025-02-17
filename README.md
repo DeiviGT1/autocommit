@@ -1,22 +1,74 @@
 # Auto Commit Tool
+A command-line tool written in Python to
+automate the Git commit process, with an option to generate commit messages\using the OpenAI API via requests.
 
-Una herramienta de línea de comandos en Python para automatizar el proceso de commits en Git. Permite:
+## Features
 
-- Agregar todos los cambios en el repositorio.
-- Obtener el diff actual y, opcionalmente, generar un mensaje de commit utilizando la API de OpenAI.
-- Realizar el commit.
-- (Opcional) Hacer push al repositorio remoto.
+- Stage Changes: Automatically stages changes using `git add .`.
+- Retrieve Diff: Captures the current Git diff between previous and latest commits.
+- Generate Commit Message: Uses the OpenAI API (via requests) to generate a concise and descriptive commit message based on the diff.
+- Commit Changes: Commits your changes with the generated or provided commit message.
+- Push Commits: Optionally pushes the commit to your remote repository.
 
-## Requisitos
+## Requirements
 
-- Python 3.6 o superior.
-- Git instalado en el sistema.
-- Opcional: [OpenAI Python package](https://pypi.org/project/openai/) (si se desea usar la funcionalidad de generación automática de mensajes).
+- Python 3.6 or higher.
+- Git installed on your system.
+- Requests package for making HTTP requests.
 
-## Instalación
+## Installation
 
-1. Clona el repositorio:
+1. Clone the repository:
 
-   ```bash
-   git clone https://github.com/tu_usuario/auto-commit-tool.git
+   git clone https://github.com/your_username/auto-commit-tool.git
    cd auto-commit-tool
+
+2. (Optional) Create a virtual environment and install dependencies:
+
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+
+3. Make the script executable:
+
+   chmod +x auto_commit.py
+
+## Usage
+
+### Basic Execution
+
+Run the script witout the OpenAI option:
+
+   ./auto_commit.py
+
+### Using the OpenAI API
+
+Ensure your OpenAI API key is et (via the --api-key flag or the OPENAI_API_KEY environment variable).
+
+Example:
+
+   ./auto_commit.py --openai --push --api-key YOUR_OPENAI_API_KEY
+
+### Creating an Alias
+
+To simplify execution, create an alias in your shell configuration.
+
+For example, edit your ~/.bash_profile or ~/.zshrc and add this line:
+
+   alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY /Users/david/Desktop/ds/auto_commit.py --openai --push'
+
+Reload your shell configuration:
+
+   source ~/.bash_profile
+
+Now, run:
+
+   autocommit
+
+## Contributing
+
+Contributions are welcome!
+
+## License
+
+This project is licensed under the MIT License.

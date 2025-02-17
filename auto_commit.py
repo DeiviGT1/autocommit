@@ -52,7 +52,8 @@ def main():
             sys.exit(1)
         print("diff_output:" + diff_output)
         user_message = (
-            "Generate a concise and descriptive commit message for the following diff:\n\n"
+            "Based on the following Git diff, generate a concise commit message that clearly summarizes the changes made. "
+            "Highlight any new features, bug fixes, or improvements while keeping the message succinct:\n\n"
             + diff_output
         )
         print("Generating commit message using OpenAI (via requests)...")
