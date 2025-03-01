@@ -18,6 +18,7 @@ def main():
     )
     parser.add_argument(
         "--push",
+        "-p"
         action="store_true",
         help="Push the commit after committing."
     )
