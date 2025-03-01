@@ -63,6 +63,11 @@ Edit your ~/.zshrc (or\~/.bash_profile) and add this line:
 ```
    alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY $(pwd)/run.py --openai'
 ```
+
+If the you want to select which files you want to load you can use this alias:
+```
+   alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY $(pwd)/run.py --openai --add'
+```
 Reload your configuration:
 ```
    source ~/.zshrc

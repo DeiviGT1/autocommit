@@ -1,15 +1,23 @@
 #!/Users/david/Desktop/ds/venv/bin/python3
 
-#ds/auto_commit_mac.py
 import os
 import subprocess
 import argparse
 import sys
 import requests
 
+def prompt_for_files(cli_files):
+    if cli_files:
+        return cli_files
+    files = input("Enter the file(s) to add (separated by space): ").strip()
+    if not files:
+        print("No files entered. Exiting.")
+        sys.exit(1)
+    return files.split()
+
 def main():
     parser = argparse.ArgumentParser(
-        description="Tool for automating Git commits, with the option to generate commit messages using the OpenAI API via requests."
+        description="Tool for automating Git commits, with options for interactive file staging and generating commit messages via the OpenAI API."
     )
     parser.add_argument(
         "--openai",
@@ -18,25 +26,48 @@ def main():
     )
     parser.add_argument(
         "--push",
+        "--p",
         action="store_true",
         default=False,
         help="Push the commit after committing. (Default: False)"
+    )
+    parser.add_argument(
+        "--add",
+        "-a",
+        action="store_true",
+        help="Interactively choose files to add instead of staging all changes."
     )
     parser.add_argument(
         "--api-key",
         type=str,
         help="OpenAI API key. If not provided, the script will look in the OPENAI_API_KEY environment variable."
     )
+    # New positional argument for files.
+    parser.add_argument(
+        "files",
+        nargs="*",
+        help="Optional file names to stage when using --add flag."
+    )
+    
     args = parser.parse_args()
 
     if not os.path.isdir(".git"):
         print("Error: .git directory not found. Make sure you are in a Git repository.")
         sys.exit(1)
 
-    print("Staging changes with 'git add .'...")
-    add_result = subprocess.run("git add .", shell=True, capture_output=True, text=True)
+    # Stage changes: either interactively choose files or add all changes.
+    if args.add:
+        # If positional file names are provided, use them; otherwise, prompt the user.
+        files_to_add = args.files if args.files else prompt_for_files([])
+        add_cmd = ["git", "add"] + files_to_add
+    else:
+        print("Staging all changes with 'git add .'...")
+        add_cmd = ["git", "add", "."]
+
+    add_result = subprocess.run(add_cmd, capture_output=True, text=True)
     if add_result.returncode != 0:
-        print("Error executing 'git add .'.")
+        print("Error executing git add command.")
+        print(add_result.stderr)
         sys.exit(1)
 
     print("Retrieving Git diff...")
@@ -83,13 +114,11 @@ def main():
         commit_message = input("Enter the commit message: ")
 
     print("Committing changes...")
-    
     commit_result = subprocess.run(["git", "commit", "-am", commit_message])
     if commit_result.returncode != 0:
         print("Error during commit.")
         sys.exit(1)
 
-    print("ARGS: " + str(args))
     if args.push:
         print("Pushing changes to the remote repository...")
         remote_result = subprocess.run(["git", "remote"], capture_output=True, text=True)
