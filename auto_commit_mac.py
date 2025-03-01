@@ -1,4 +1,6 @@
 #!/Users/david/Desktop/ds/venv/bin/python3
+
+#ds/auto_commit_mac.py
 import os
 import subprocess
 import argparse
