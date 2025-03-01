@@ -34,9 +34,9 @@ pip install -r requirements.txt
 3. **Important for Mac Users:**  
    Ensure that each file starts with the following shebang line for proper execution:
 
-   ``` 
+``` 
 #!/Users/david/Desktop/ds/venv/bin/python3
-   ```
+```
 
    Modify this line if your virtual environment is located elsewhere.
 
