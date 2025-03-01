@@ -6,6 +6,7 @@ import os
 import subprocess
 
 def main():
+    
     # Determine the current operating system
     platform = sys.platform
     script_dir = os.path.dirname(os.path.realpath(__file__))

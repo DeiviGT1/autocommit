@@ -57,6 +57,8 @@ def main():
 
     # Stage changes: either interactively choose files or add all changes.
     if args.add:
+        print(f"git add {args.files}")
+        print("DEBUG")
         # If positional file names are provided, use them; otherwise, prompt the user.
         files_to_add = args.files if args.files else prompt_for_files([])
         add_cmd = ["git", "add"] + files_to_add
