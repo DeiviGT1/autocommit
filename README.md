@@ -60,6 +60,7 @@ Example:
 #### For macOS
 
 Edit your ~/.zshrc (or\~/.bash_profile) and add this line:
+
 ```
    alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY $(pwd)/run.py --openai'
 ```
