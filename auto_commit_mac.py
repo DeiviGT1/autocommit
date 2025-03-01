@@ -67,6 +67,8 @@ def main():
         add_cmd = ["git", "add", "."]
 
     add_result = subprocess.run(add_cmd, capture_output=True, text=True)
+    print(f"add_cmd: {add_cmd}")
+    print(f"add_result: {add_result}")
     if add_result.returncode != 0:
         print("Error executing git add command.")
         print(add_result.stderr)
@@ -74,6 +76,7 @@ def main():
 
     print("Retrieving Git diff...")
     diff_process = subprocess.run(["git", "diff", "--staged"], capture_output=True, text=True)
+    print(f"DIFF PROCEESS: {diff_process}")
     diff_output = diff_process.stdout.strip()
 
     if args.openai:
