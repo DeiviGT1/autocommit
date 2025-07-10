@@ -6,6 +6,7 @@ import argparse
 import sys
 import requests
 
+
 def main():
     
     parser = argparse.ArgumentParser(
@@ -18,7 +19,7 @@ def main():
     )
     parser.add_argument(
         "--push",
-        "-p"
+        "--p",
         action="store_true",
         help="Push the commit after committing."
     )
