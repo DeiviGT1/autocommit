@@ -35,14 +35,35 @@ def main():
         sys.exit(1)
 
     print("Staging changes with 'git add .'...")
-    add_result = subprocess.run("git add .", shell=True, capture_output=True, text=True)
+    add_result = subprocess.run("git add .", shell=True, capture_output=True, text=True, encoding='utf-8', errors='replace')
     if add_result.returncode != 0:
         print("Error executing 'git add .'.")
         sys.exit(1)
 
     print("Retrieving Git diff...")
-    diff_process = subprocess.run(["git", "diff", "--staged"], capture_output=True, text=True)
-    diff_output = diff_process.stdout.strip()
+    try:
+        # Use encoding='utf-8' and errors='replace' to handle problematic characters
+        diff_process = subprocess.run(
+            ["git", "diff", "--staged"], 
+            capture_output=True, 
+            text=True, 
+            encoding='utf-8', 
+            errors='replace'
+        )
+        
+        if diff_process.returncode != 0:
+            print("Error executing 'git diff --staged'.")
+            sys.exit(1)
+            
+        diff_output = diff_process.stdout.strip() if diff_process.stdout else ""
+        
+        if not diff_output:
+            print("No staged changes found. Nothing to commit.")
+            sys.exit(0)
+            
+    except Exception as e:
+        print(f"Error retrieving Git diff: {e}")
+        sys.exit(1)
 
     if args.openai:
         api_key = args.api_key or os.environ.get("OPENAI_API_KEY")
@@ -91,14 +112,18 @@ def main():
 
     if args.push:
         print("Pushing changes to the remote repository...")
-        remote_result = subprocess.run(["git", "remote"], capture_output=True, text=True)
-        if remote_result.stdout.strip() == "":
-            print("No remote repository configured. Skipping push.")
-        else:
-            push_result = subprocess.run(["git", "push"])
-            if push_result.returncode != 0:
-                print("Error during push.")
-                sys.exit(1)
+        try:
+            remote_result = subprocess.run(["git", "remote"], capture_output=True, text=True, encoding='utf-8', errors='replace')
+            if not remote_result.stdout or remote_result.stdout.strip() == "":
+                print("No remote repository configured. Skipping push.")
+            else:
+                push_result = subprocess.run(["git", "push"])
+                if push_result.returncode != 0:
+                    print("Error during push.")
+                    sys.exit(1)
+        except Exception as e:
+            print(f"Error checking remote or pushing: {e}")
+            sys.exit(1)
     else:
         print("Push option not specified. Skipping push.")
 
