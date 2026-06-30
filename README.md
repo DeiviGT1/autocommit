@@ -98,7 +98,7 @@ Example:
    powershell
       function Set-Alias autocommit {
       $env:OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
-      python "C:\path\to\auto-commit-tool\run.py" --openai
+      python "C:\\path\\to\\auto-commit-tool\\run.py" --openai
 }
 ```
 ## Contributing
@@ -108,3 +108,68 @@ Contributions are welcome!
 ## License
 
 This project is licensed under the MIT License.
+
+---
+
+# Updated Features — 2026-06-30
+
+This section documents enhancements added after the original Auto Commit Tool README above.
+
+## New: Multi-LLM Provider Support
+
+The tool now supports generating commit messages through multiple LLM providers, not only OpenAI.
+
+### Supported Providers
+1. **OpenAI** — `gpt-4o`, `gpt-4o-mini`, `gpt-4.1`, `o3-mini`
+2. **Anthropic (Claude)** — `claude-sonnet-4-20250514`, `claude-3-5-haiku-20241022`, `claude-3-opus-20240229`
+3. **Google (Gemini)** — `gemini-2.5-pro`, `gemini-2.5-flash`, `gemini-2.0-flash`, `gemma-3-27b-it`
+4. **Ollama (local)** — `llama3.3`, `deepseek-coder-v2`, `mistral`, `qwen2.5:72b`, `phi4`
+5. **Groq** — `llama-3.3-70b-versatile`, `mixtral-8x7b-32768`, `gemma2-9b-it`
+
+### New CLI Flags
+- **`--setup`**
+  Run the first-time interactive configuration wizard to select your provider and model.
+
+- **`--reset`**
+  Clear saved settings and re-run setup.
+
+- **`--llm`**
+  Use the configured LLM provider to generate commit messages from diffs.
+
+- **`--provider`**
+  Select a provider: `openai`, `anthropic`, `google`, `ollama`, or `groq`.
+
+- **--model`**
+  Override the model for the selected provider.
+
+- **`--base-url`**
+  Override the default API base URL for the selected provider.
+
+- **`--api-key`**
+  Override the API key for the selected provider.
+
+- **`--config-path`**
+  Show or override the persisted configuration file path. Default: `~/.autocommit.json`.
+
+### First-Time Setup
+```bash
+python run.py --setup
+```
+
+You are prompted to select a provider and model, and to enter or confirm the API key for your provider. If using Ollama, enter the host URL instead of an API key. Configuration is saved to `~/.autocommit.json`.
+
+### Example Usage
+```bash
+python run.py --llm
+python run.py --llm --provider openai --model gpt-4o-mini
+python run.py --llm --provider ollama --base-url http://localhost:11434/api/chat --model llama3.3
+python run.py --llm --provider anthropic --model claude-3-5-haiku-20241022
+```
+
+### Backward Compatibility
+The original `--openai` behavior has been preserved in spirit through the new `--llm` flow. Provider/model defaults are stored locally, so repeat invocations can stay simple:
+
+```bash
+python run.py --llm
+python run.py --llm --push
+```
