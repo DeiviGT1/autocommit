@@ -1,110 +1,111 @@
 # Auto Commit Tool
 
-This command-line tool, written in Python, automates the Git commit process. It also offers the option to generate commit messages automatically using the OpenAI API via the *requests* library. Below you will find detailed instructions on how to use the code, explanations for each flag, how to create aliases for easier access, and an important note for Mac users.
+This command-line tool, written in Python, automates the Git commit process. It also offers the option to generate commit messages automatically using multiple LLM providers, including OpenAI, Anthropic Claude, Google Gemini, Groq, and Ollama.
 
 ## Features
 - **Stage Changes:** Automatically stages changes with `git add .` or interactively with the `--add` flag.
 - **Retrieve Diff:** Captures the current Git diff between the previous and latest commits.
-- **Generate Commit Message:** Uses the OpenAI API to generate a concise and descriptive commit message based on the diff.
+- **Generate Commit Message:** Uses a configured LLM to generate a concise and descriptive commit message based on the diff.
 - **Commit and Push:** Commits your changes with the generated or manually entered commit message and optionally pushes the commit to your remote repository using the `--push` flag.
 
 ## Requirements
-
-- Python 3.6 or higher.
+- Python 3.8 or higher.
 - Git installed on your system.
-- The *requests* package for making HTTP requests.
-- An OpenAI account and API key (if you wish to use automatic message generation).
+- The `requests` package for HTTP.
+- A supported LLM provider account and API key unless using Ollama.
+
+## Supported Providers
+1. OpenAI
+2. Anthropic Claude
+3. Google Gemini
+4. Groq
+5. Ollama (local)
 
 ## Installation
 1. Clone the repository:
-
-```
+```bash
 git clone https://github.com/your_username/auto-commit-tool.git
 cd auto-commit-tool
 ```
 
-2. (Optional) Create a virtual environment and install the dependencies:
-
-```
+2. Create a virtual environment and install the dependencies:
+```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-3. **Important for Mac Users:**  
-   Ensure that each file starts with the following shebang line for proper execution:
-
-``` 
-#!/Users/david/Desktop/ds/venv/bin/python3
-```
-
-   Modify this line if your virtual environment is located elsewhere.
-
-4. Make the `run.py` file executable:
-
-```
+3. Make `run.py` executable:
+```bash
 chmod +x run.py
 ```
 
+## First-time Setup
+```bash
+python run.py --setup
+```
+
+You are prompted to select a provider and model, and to enter/store the API key for your provider. If using Ollama, enter the host URL instead of an API key. Configuration is saved to `~/.autocommit.json`.
+
 ## Using the Code
-
-The `run.py` script serves as the entry point for the tool. Below are the explanations for the different flags:
-
-- **`--openai`**  
-  Activates the generation of the commit message using the OpenAI API. When used, the script will take the current Git diff and send it to OpenAI to obtain a concise message.  
-  Example:
-  
+Run the tool and generate a commit message with your configured provider:
+```bash
+python run.py --llm
 ```
-python run.py --openai --api-key YOUR_OPENAI_API_KEY
+
+Override provider/model/cmd-line options at any time:
+```bash
+python run.py --llm --provider openai --model gpt-4o-mini
+python run.py --llm --provider ollama --base-url http://localhost:11434/api/chat --model llama3.3
+python run.py --llm --provider anthropic --model claude-3-5-haiku-20241022
 ```
+
+Re-run setup after clearing saved settings:
+```bash
+python run.py --reset
+```
+
+## Flags
+- **`--setup`**  
+  Run the first-time interactive configuration wizard.
+
+- **`--reset`**  
+  Clear saved settings.
+
+- **`--llm`**  
+  Use the configured LLM provider to generate the commit message from the diff.
+
+- **`--provider`**  
+  Choose `openai`, `anthropic`, `google`, `groq`, or `ollama`.
+
+- **`--model`**  
+  Override the model for the selected provider.
+
+- **`--base-url`**  
+  Override the API base URL for the selected provider.
 
 - **`--api-key`**  
-  Allows you to pass your OpenAI API key directly. If not provided, the script will look for the `OPENAI_API_KEY` environment variable.
+  Override the API key for the selected provider.
 
-- **`--push` (or `--p`)**  
-  Indicates that after committing, the tool should push the commit to the remote repository. If this flag is not used, the push step will be skipped.
+- **`--push`**  
+  Push the commit after committing.
 
-- **`--add` (or `-a`)**  
-  Enables interactive file staging. When this flag is used, you can select which files to stage rather than staging all changes. If positional file names are provided, those files will be staged; otherwise, the tool will prompt you to enter the files manually.
-```
-   chmod +x run.py
-```
-## Usage
-### Creating Aliases
+- **`--add`**  
+  Interactively choose files to add instead of staging all changes.
 
-#### For macOS
-You can create an alias in your shell configuration file (`~/.zshrc` or `~/.bash_profile`) to easily run the tool:
+## Creating Aliases
 
-``` 
-alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY $(pwd)/run.py --openai'
+### For macOS
+Create an alias in your shell rc file:
+```bash
+alias autocommit='python /path/to/auto-commit-tool/run.py --llm'
 ```
 
-If you want to use the interactive file selection option, use:
+### For Windows
+Create a function or alias that points to the full path of `run.py`.
 
-``` 
-alias autocommit='OPENAI_API_KEY=YOUR_OPENAI_API_KEY $(pwd)/run.py --openai --add'
-```
-
-Then, reload your configuration:
-
-``` 
-source ~/.zshrc
-```
-#### For Windows
-
-Edit your PowerShell profile (or your command lime configuration) and create a similar alias or function that points to the full path of run.py.
-Example:
-```
-   powershell
-      function Set-Alias autocommit {
-      $env:OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY';
-      python "C:\path\to\auto-commit-tool\run.py" --openai
-}
-```
 ## Contributing
-
 Contributions are welcome!
 
 ## License
-
 This project is licensed under the MIT License.
